@@ -35,13 +35,12 @@ class PhotoMainPage extends StatefulWidget {
   _PhotoMainPageState createState() => _PhotoMainPageState();
 }
 
-class _PhotoMainPageState extends State<PhotoMainPage>
-    with SelectedProvider, GalleryListProvider {
+class _PhotoMainPageState extends State<PhotoMainPage> with SelectedProvider, GalleryListProvider {
   Options get options => widget.options;
 
   I18nProvider get i18nProvider => PhotoPickerProvider.of(context).provider;
-  AssetProvider get assetProvider =>
-      PhotoPickerProvider.of(context).assetProvider;
+
+  AssetProvider get assetProvider => PhotoPickerProvider.of(context).assetProvider;
 
   List<AssetEntity> get list => assetProvider.data;
 
@@ -117,24 +116,25 @@ class _PhotoMainPageState extends State<PhotoMainPage>
               ),
               onPressed: _cancel,
             ),
-            title: Text(
-              i18nProvider.getTitleText(options),
-              style: TextStyle(
-                color: options.textColor,
+            title: GestureDetector(
+              child: Wrap(
+                spacing: 5,
+                children: <Widget>[
+                  Text(
+                    assetProvider?.current?.name ?? i18nProvider.getTitleText(options),
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: options.textColor,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 5.0),
+                    child: Icon(Icons.keyboard_arrow_down, size: 16),
+                  ),
+                ],
               ),
+              onTap: _showGallerySelectDialog,
             ),
-            actions: <Widget>[
-              FlatButton(
-                splashColor: Colors.transparent,
-                child: Text(
-                  i18nProvider.getSureText(options, selectedCount),
-                  style: selectedCount == 0
-                      ? textStyle.copyWith(color: options.disableColor)
-                      : textStyle,
-                ),
-                onPressed: selectedCount == 0 ? null : sure,
-              ),
-            ],
           ),
           body: _buildBody(),
           bottomNavigationBar: _BottomWidget(
@@ -146,10 +146,24 @@ class _PhotoMainPageState extends State<PhotoMainPage>
             onTapPreview: selectedList.isEmpty ? null : _onTapPreview,
             selectedProvider: this,
             galleryListProvider: this,
+            onTapComfirm: sure,
           ),
         ),
       ),
     );
+  }
+
+  void _showGallerySelectDialog() async {
+    var result = await showModalBottomSheet(
+      context: context,
+      builder: (ctx) => ChangeGalleryDialog(
+        galleryList: galleryPathList,
+        i18n: i18nProvider,
+        options: options,
+      ),
+    );
+
+    if (result != null) _onGalleryChange.call(result);
   }
 
   void _cancel() {
@@ -336,6 +350,8 @@ class _PhotoMainPageState extends State<PhotoMainPage>
   Widget _buildText(AssetEntity entity) {
     var isSelected = containsEntity(entity);
     Widget child;
+    Color bgColor = const Color(0x33000000);
+    Color borderColor = Colors.white;
     BoxDecoration decoration;
     if (isSelected) {
       child = Text(
@@ -343,18 +359,27 @@ class _PhotoMainPageState extends State<PhotoMainPage>
         textAlign: TextAlign.center,
         style: TextStyle(
           fontSize: 12.0,
+          fontWeight: FontWeight.bold,
           color: options.textColor,
         ),
       );
-      decoration = BoxDecoration(color: themeColor);
-    } else {
-      decoration = BoxDecoration(
-        borderRadius: BorderRadius.circular(1.0),
-        border: Border.all(
-          color: themeColor,
-        ),
-      );
+      bgColor = themeColor;
+      borderColor = themeColor;
+//      decoration = BoxDecoration(color: themeColor);
+//    } else {
+//      decoration = BoxDecoration(
+//        borderRadius: BorderRadius.circular(1.0),
+//        border: Border.all(
+//          color: themeColor,
+//        ),
+//      );
+
     }
+    decoration = BoxDecoration(
+      color: bgColor,
+      borderRadius: BorderRadius.circular(18.0),
+      border: Border.all(color: borderColor, width: 2),
+    );
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: AnimatedContainer(

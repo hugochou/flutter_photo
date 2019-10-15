@@ -13,6 +13,7 @@ class _BottomWidget extends StatefulWidget {
 
   final GalleryListProvider galleryListProvider;
   final VoidCallback onTapPreview;
+  final VoidCallback onTapComfirm;
 
   const _BottomWidget({
     Key key,
@@ -23,6 +24,7 @@ class _BottomWidget extends StatefulWidget {
     this.galleryName = "",
     this.galleryListProvider,
     this.onTapPreview,
+    this.onTapComfirm,
   }) : super(key: key);
 
   @override
@@ -47,22 +49,19 @@ class __BottomWidgetState extends State<_BottomWidget> {
           height: 52.0,
           child: Row(
             children: <Widget>[
-              FlatButton(
-                onPressed: _showGallerySelectDialog,
-                splashColor: Colors.transparent,
-                child: Container(
-                  alignment: Alignment.center,
-                  height: 44.0,
-                  padding: textPadding,
-                  child: Text(
-                    widget.galleryName,
-                    style: textStyle.copyWith(color: options.textColor),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Container(),
-              ),
+//              FlatButton(
+//                onPressed: _showGallerySelectDialog,
+//                splashColor: Colors.transparent,
+//                child: Container(
+//                  alignment: Alignment.center,
+//                  height: 44.0,
+//                  padding: textPadding,
+//                  child: Text(
+//                    widget.galleryName,
+//                    style: textStyle.copyWith(color: options.textColor),
+//                  ),
+//                ),
+//              ),
               FlatButton(
                 onPressed: widget.onTapPreview,
                 textColor: options.textColor,
@@ -72,12 +71,24 @@ class __BottomWidgetState extends State<_BottomWidget> {
                   height: 44.0,
                   alignment: Alignment.center,
                   child: Text(
-                    i18nProvider.getPreviewText(
-                        options, widget.selectedProvider),
+                    i18nProvider.getPreviewText(options, widget.selectedProvider),
                     style: textStyle,
                   ),
                   padding: textPadding,
                 ),
+              ),
+              Expanded(
+                child: Container(),
+              ),
+              FlatButton(
+                textColor: options.textColor,
+                splashColor: Colors.transparent,
+                disabledTextColor: options.disableColor,
+                child: Text(
+                  i18nProvider.getSureText(options, widget.selectedProvider.selectedCount),
+                  style: textStyle,
+                ),
+                onPressed: widget.selectedProvider.selectedCount == 0 ? null : widget.onTapComfirm,
               ),
             ],
           ),
@@ -90,10 +101,10 @@ class __BottomWidgetState extends State<_BottomWidget> {
     var result = await showModalBottomSheet(
       context: context,
       builder: (ctx) => ChangeGalleryDialog(
-            galleryList: widget.galleryListProvider.galleryPathList,
-            i18n: i18nProvider,
-            options: options,
-          ),
+        galleryList: widget.galleryListProvider.galleryPathList,
+        i18n: i18nProvider,
+        options: options,
+      ),
     );
 
     if (result != null) widget.onGalleryChange?.call(result);
