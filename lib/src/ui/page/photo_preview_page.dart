@@ -325,21 +325,23 @@ class _PhotoPreviewPageState extends State<PhotoPreviewPage> {
   }
 
   Widget _buildThumbItem(BuildContext context, int index, int current) {
-    var item = previewList[index];
+    var thumbItem = previewList[index];
+    var previewItem = list[current];
+    var checked = thumbItem == previewItem;
     return RepaintBoundary(
       child: GestureDetector(
-        onTap: () => changeSelected(item, index),
+        onTap: () => changeSelected(thumbItem, index),
         child: Container(
           width: 60.0,
           margin: const EdgeInsets.symmetric(horizontal: 3),
           decoration: BoxDecoration(
-            border: Border.all(width: 3, color: current == index ? Colors.white : Colors.transparent),
+            border: Border.all(width: 3, color: checked ? Colors.white : Colors.transparent),
           ),
           child: Stack(
             children: <Widget>[
               ImageItem(
                 themeColor: themeColor,
-                entity: item,
+                entity: thumbItem,
                 size: options.thumbSize,
                 loadingDelegate: options.loadingDelegate,
               ),
@@ -347,7 +349,7 @@ class _PhotoPreviewPageState extends State<PhotoPreviewPage> {
                 child: StreamBuilder(
                   stream: pageStream,
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    if (selectedList.contains(item)) {
+                    if (selectedList.contains(thumbItem)) {
                       return Container();
                     }
                     return Container(

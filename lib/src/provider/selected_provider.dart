@@ -32,12 +32,18 @@ abstract class SelectedProvider {
     return selectedList.remove(entity);
   }
 
-  void compareAndRemoveEntities(List<AssetEntity> previewSelectedList) {
+  void compareAndRemoveEntities(List<AssetEntity> previewSelectedList, bool isAll) {
+    if (isAll) {
+      return;
+    }
+
     var srcList = List.of(selectedList);
     selectedList.clear();
     srcList.forEach((entity) {
       if (previewSelectedList.contains(entity)) {
         selectedList.add(entity);
+      } else {
+        selectedList.remove(entity);
       }
     });
   }

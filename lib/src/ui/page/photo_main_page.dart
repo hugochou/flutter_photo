@@ -36,7 +36,7 @@ class PhotoMainPage extends StatefulWidget {
   _PhotoMainPageState createState() => _PhotoMainPageState();
 }
 
-class _PhotoMainPageState extends State<PhotoMainPage> with SelectedProvider, GalleryListProvider, RouteAware {
+class _PhotoMainPageState extends State<PhotoMainPage> with SelectedProvider, GalleryListProvider {
   Options get options => widget.options;
 
   I18nProvider get i18nProvider => PhotoPickerProvider.of(context).provider;
@@ -429,15 +429,16 @@ class _PhotoMainPageState extends State<PhotoMainPage> with SelectedProvider, Ga
           );
         },
       ),
-    ).then((v) => _onPreviewPop(v));
+    ).then((v) => _onPreviewPop(v, result, true));
   }
 
-  void _onPreviewPop(List<AssetEntity> v) {
+  void _onPreviewPop(List<AssetEntity> v, PhotoPreviewResult result, bool isAll) {
     if (handlePreviewResult(v)) {
       Navigator.pop(context, v);
       return;
     }
     isPushed = false;
+    compareAndRemoveEntities(result.previewSelectedList, isAll);
     setState(() {});
   }
 
@@ -460,13 +461,7 @@ class _PhotoMainPageState extends State<PhotoMainPage> with SelectedProvider, Ga
         ),
       ),
     );
-    if (handlePreviewResult(v)) {
-      // print(v);
-      Navigator.pop(context, v);
-      return;
-    }
-    isPushed = false;
-    compareAndRemoveEntities(result.previewSelectedList);
+    _onPreviewPop(v, result, false);
   }
 
   bool handlePreviewResult(List<AssetEntity> v) {
