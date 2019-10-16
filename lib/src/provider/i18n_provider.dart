@@ -52,7 +52,7 @@ class CNProvider extends I18nProvider {
 
   @override
   String getMaxTipText(Options options) {
-    return "您已经选择了${options.maxSelected}张图片";
+    return "最多只能选择${options.maxSelected}张图片";
   }
 
   @override
