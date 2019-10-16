@@ -283,9 +283,12 @@ class _PhotoPreviewPageState extends State<PhotoPreviewPage> {
     }
 
     var data = list[index];
-    return BigPhotoImage(
-      assetEntity: data,
-      loadingWidget: _buildLoadingWidget(data),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 85),
+      child: BigPhotoImage(
+        assetEntity: data,
+        loadingWidget: _buildLoadingWidget(data),
+      ),
     );
   }
 
@@ -330,7 +333,7 @@ class _PhotoPreviewPageState extends State<PhotoPreviewPage> {
           width: 60.0,
           margin: const EdgeInsets.symmetric(horizontal: 3),
           decoration: BoxDecoration(
-            border: Border.all(width: 3, color: current == index ? Colors.green : Colors.transparent),
+            border: Border.all(width: 3, color: current == index ? Colors.white : Colors.transparent),
           ),
           child: Stack(
             children: <Widget>[

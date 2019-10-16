@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:photo/src/delegate/badge_delegate.dart';
 import 'package:photo/src/delegate/loading_delegate.dart';
@@ -35,7 +36,7 @@ class PhotoMainPage extends StatefulWidget {
   _PhotoMainPageState createState() => _PhotoMainPageState();
 }
 
-class _PhotoMainPageState extends State<PhotoMainPage> with SelectedProvider, GalleryListProvider {
+class _PhotoMainPageState extends State<PhotoMainPage> with SelectedProvider, GalleryListProvider, RouteAware {
   Options get options => widget.options;
 
   I18nProvider get i18nProvider => PhotoPickerProvider.of(context).provider;
@@ -116,24 +117,12 @@ class _PhotoMainPageState extends State<PhotoMainPage> with SelectedProvider, Ga
               ),
               onPressed: _cancel,
             ),
-            title: GestureDetector(
-              child: Wrap(
-                spacing: 5,
-                children: <Widget>[
-                  Text(
-                    assetProvider?.current?.name ?? i18nProvider.getTitleText(options),
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: options.textColor,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 5.0),
-                    child: Icon(Icons.keyboard_arrow_down, size: 16),
-                  ),
-                ],
+            title: Text(
+              i18nProvider.getTitleText(options),
+              style: TextStyle(
+                fontSize: 18,
+                color: options.textColor,
               ),
-              onTap: _showGallerySelectDialog,
             ),
           ),
           body: _buildBody(),
@@ -153,6 +142,7 @@ class _PhotoMainPageState extends State<PhotoMainPage> with SelectedProvider, Ga
     );
   }
 
+  /// 选择相册文件夹
   void _showGallerySelectDialog() async {
     var result = await showModalBottomSheet(
       context: context,
@@ -439,14 +429,16 @@ class _PhotoMainPageState extends State<PhotoMainPage> with SelectedProvider, Ga
           );
         },
       ),
-    ).then((v) {
-      if (handlePreviewResult(v)) {
-        Navigator.pop(context, v);
-        return;
-      }
-      isPushed = false;
-      setState(() {});
-    });
+    ).then((v) => _onPreviewPop(v));
+  }
+
+  void _onPreviewPop(List<AssetEntity> v) {
+    if (handlePreviewResult(v)) {
+      Navigator.pop(context, v);
+      return;
+    }
+    isPushed = false;
+    setState(() {});
   }
 
   void _onTapPreview() async {
@@ -491,14 +483,7 @@ class _PhotoMainPageState extends State<PhotoMainPage> with SelectedProvider, Ga
     return Center(
       child: Column(
         children: <Widget>[
-          Container(
-            width: 40.0,
-            height: 40.0,
-            padding: const EdgeInsets.all(5.0),
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation(themeColor),
-            ),
-          ),
+          CupertinoActivityIndicator(),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
