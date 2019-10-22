@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
@@ -36,7 +37,8 @@ class PhotoMainPage extends StatefulWidget {
   _PhotoMainPageState createState() => _PhotoMainPageState();
 }
 
-class _PhotoMainPageState extends State<PhotoMainPage> with SelectedProvider, GalleryListProvider {
+class _PhotoMainPageState extends State<PhotoMainPage>
+    with SelectedProvider, GalleryListProvider, TickerProviderStateMixin {
   Options get options => widget.options;
 
   I18nProvider get i18nProvider => PhotoPickerProvider.of(context).provider;
@@ -63,10 +65,11 @@ class _PhotoMainPageState extends State<PhotoMainPage> with SelectedProvider, Ga
   }
 
   String get currentGalleryName {
-    if (currentPath?.isAll == true) {
-      return i18nProvider.getAllGalleryText(options);
+    if (assetProvider.current?.name == null) {
+      return '选择相册';
+    } else {
+      return assetProvider.current.name;
     }
-    return currentPath?.name ?? "Select Folder";
   }
 
   GlobalKey scaffoldKey;
@@ -78,6 +81,10 @@ class _PhotoMainPageState extends State<PhotoMainPage> with SelectedProvider, Ga
 
   Throttle _changeThrottle;
 
+  AnimationController _animationController;
+  Animation<double> _animation;
+  CurvedAnimation _curveAnimation;
+
   @override
   void initState() {
     super.initState();
@@ -87,6 +94,13 @@ class _PhotoMainPageState extends State<PhotoMainPage> with SelectedProvider, Ga
     _changeThrottle = Throttle(onCall: _onAssetChange);
     PhotoManager.addChangeCallback(_changeThrottle.call);
     PhotoManager.startChangeNotify();
+
+    _animationController = AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
+    _curveAnimation = CurvedAnimation(parent: _animationController, curve: Curves.linear);
+    _animation = Tween(begin: 0.0, end: 1.0).animate(_animationController);
+    _animation.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
@@ -110,6 +124,7 @@ class _PhotoMainPageState extends State<PhotoMainPage> with SelectedProvider, Ga
         style: textStyle,
         child: Scaffold(
           appBar: AppBar(
+            centerTitle: true,
             leading: IconButton(
               icon: Icon(
                 Icons.close,
@@ -117,12 +132,27 @@ class _PhotoMainPageState extends State<PhotoMainPage> with SelectedProvider, Ga
               ),
               onPressed: _cancel,
             ),
-            title: Text(
-              i18nProvider.getTitleText(options),
-              style: TextStyle(
-                fontSize: 18,
-                color: options.textColor,
+            title: GestureDetector(
+              child: Wrap(
+                spacing: 5,
+                children: <Widget>[
+                  Text(
+                    currentGalleryName,
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: options.textColor,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 3.0),
+                    child: Transform.rotate(
+                      angle: pi * _curveAnimation.value,
+                      child: Icon(Icons.keyboard_arrow_down, size: 18),
+                    ),
+                  ),
+                ],
               ),
+              onTap: _showGallerySelectDialog,
             ),
           ),
           body: _buildBody(),
@@ -144,6 +174,7 @@ class _PhotoMainPageState extends State<PhotoMainPage> with SelectedProvider, Ga
 
   /// 选择相册文件夹
   void _showGallerySelectDialog() async {
+    _animationController.forward();
     var result = await showModalBottomSheet(
       context: context,
       builder: (ctx) => ChangeGalleryDialog(
@@ -153,6 +184,7 @@ class _PhotoMainPageState extends State<PhotoMainPage> with SelectedProvider, Ga
       ),
     );
 
+    _animationController.reverse();
     if (result != null) _onGalleryChange.call(result);
   }
 
@@ -237,12 +269,6 @@ class _PhotoMainPageState extends State<PhotoMainPage> with SelectedProvider, Ga
     if (pathList.isNotEmpty) {
       assetProvider.current = pathList[0];
       await assetProvider.loadMore();
-    }
-
-    for (var path in pathList) {
-      if (path.isAll) {
-        path.name = i18nProvider.getAllGalleryText(options);
-      }
     }
 
     setState(() {

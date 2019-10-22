@@ -85,8 +85,8 @@ class RadioCheckBoxBuilderDelegate extends CheckBoxBuilderDelegate {
 }
 
 class CustomCheckBoxBuilderDelegate extends CheckBoxBuilderDelegate {
-  Color selectedColor;
-  Color unselectedColor;
+  Color selectedColor; // 选中的背景色
+  Color unselectedColor; // 未选中的背景色
 
   CustomCheckBoxBuilderDelegate({
     this.selectedColor = Colors.black,
@@ -109,17 +109,11 @@ class CustomCheckBoxBuilderDelegate extends CheckBoxBuilderDelegate {
           width: 22,
           height: 22,
           decoration: BoxDecoration(
-            color: checked ? unselectedColor : selectedColor,
-            border: Border.all(color: checked ? selectedColor : unselectedColor, width: 1),
+            color: checked ? selectedColor : unselectedColor,
+            border: Border.all(color: checked ? unselectedColor : selectedColor, width: 1),
             borderRadius: BorderRadius.all(Radius.circular(11)),
           ),
-          child: Center(
-              child: checked
-                  ? Text(
-                      '${index + 1}',
-                      style: TextStyle(color: selectedColor),
-                    )
-                  : Icon(Icons.check, size: 16, color: unselectedColor)),
+          child: Center(child: Icon(Icons.check, size: 16, color: unselectedColor)),
         ),
       ),
     );

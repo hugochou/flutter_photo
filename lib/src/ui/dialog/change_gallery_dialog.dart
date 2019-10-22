@@ -32,13 +32,7 @@ class _ChangeGalleryDialogState extends State<ChangeGalleryDialog> {
 
   Widget _buildItem(BuildContext context, int index) {
     var entity = widget.galleryList[index];
-    String text;
-
-    if (entity.isAll) {
-      text = widget.i18n?.getAllGalleryText(widget.options);
-    }
-
-    text = text ?? entity.name;
+    String text = entity.name ?? '选择相册';
 
     return FlatButton(
       child: ListTile(

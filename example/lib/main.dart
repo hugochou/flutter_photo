@@ -33,8 +33,7 @@ class _MyHomePageState extends State<MyHomePage> with LoadingDelegate {
   String currentSelected = "";
 
   @override
-  Widget buildBigImageLoading(
-      BuildContext context, AssetEntity entity, Color themeColor) {
+  Widget buildBigImageLoading(BuildContext context, AssetEntity entity, Color themeColor) {
     return Center(
       child: Container(
         width: 50.0,
@@ -47,8 +46,7 @@ class _MyHomePageState extends State<MyHomePage> with LoadingDelegate {
   }
 
   @override
-  Widget buildPreviewLoading(
-      BuildContext context, AssetEntity entity, Color themeColor) {
+  Widget buildPreviewLoading(BuildContext context, AssetEntity entity, Color themeColor) {
     return Center(
       child: Container(
         width: 50.0,
@@ -76,18 +74,9 @@ class _MyHomePageState extends State<MyHomePage> with LoadingDelegate {
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              IconTextButton(
-                  icon: Icons.photo,
-                  text: "photo",
-                  onTap: () => _pickAsset(PickType.onlyImage)),
-              IconTextButton(
-                  icon: Icons.videocam,
-                  text: "video",
-                  onTap: () => _pickAsset(PickType.onlyVideo)),
-              IconTextButton(
-                  icon: Icons.album,
-                  text: "all",
-                  onTap: () => _pickAsset(PickType.all)),
+              IconTextButton(icon: Icons.photo, text: "photo", onTap: () => _pickAsset(PickType.onlyImage)),
+              IconTextButton(icon: Icons.videocam, text: "video", onTap: () => _pickAsset(PickType.onlyVideo)),
+              IconTextButton(icon: Icons.album, text: "all", onTap: () => _pickAsset(PickType.all)),
               Text(
                 '$currentSelected',
                 textAlign: TextAlign.center,
@@ -140,10 +129,9 @@ class _MyHomePageState extends State<MyHomePage> with LoadingDelegate {
       // preview thumb size , default is 64
       sortDelegate: SortDelegate.common,
       // default is common ,or you make custom delegate to sort your gallery
-      checkBoxBuilderDelegate: DefaultCheckBoxBuilderDelegate(
-        activeColor: Colors.white,
-        unselectedColor: Colors.white,
-        checkColor: Colors.green,
+      checkBoxBuilderDelegate: CustomCheckBoxBuilderDelegate(
+        selectedColor: Colors.white,
+        unselectedColor: Colors.green,
       ),
       // default is DefaultCheckBoxBuilderDelegate ,or you make custom delegate to create checkbox
 
@@ -170,8 +158,7 @@ class _MyHomePageState extends State<MyHomePage> with LoadingDelegate {
 
       List<AssetEntity> preview = [];
       preview.addAll(imgList);
-      Navigator.push(context,
-          MaterialPageRoute(builder: (_) => PreviewPage(list: preview)));
+      Navigator.push(context, MaterialPageRoute(builder: (_) => PreviewPage(list: preview)));
     }
     setState(() {});
   }
@@ -182,8 +169,7 @@ class IconTextButton extends StatelessWidget {
   final String text;
   final Function onTap;
 
-  const IconTextButton({Key key, this.icon, this.text, this.onTap})
-      : super(key: key);
+  const IconTextButton({Key key, this.icon, this.text, this.onTap}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
