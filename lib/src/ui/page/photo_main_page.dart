@@ -308,7 +308,11 @@ class _PhotoMainPageState extends State<PhotoMainPage>
   Widget _buildItem(BuildContext context, int index) {
     final noMore = assetProvider.noMore;
     if (!noMore && index == assetProvider.count) {
-      _loadMore();
+      if (assetProvider.current == null) {
+        _onGalleryChange(this.galleryPathList[0]);
+      } else {
+        _loadMore();
+      }
       return _buildLoading();
     }
 
