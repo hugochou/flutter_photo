@@ -267,7 +267,8 @@ class _PhotoMainPageState extends State<PhotoMainPage>
     galleryPathList.addAll(pathList);
 
     if (pathList.isNotEmpty) {
-      assetProvider.current = pathList[0];
+      currentPath = pathList[0];
+      assetProvider.current = currentPath;
       await assetProvider.loadMore();
     }
 
@@ -308,9 +309,10 @@ class _PhotoMainPageState extends State<PhotoMainPage>
   Widget _buildItem(BuildContext context, int index) {
     final noMore = assetProvider.noMore;
     if (!noMore && index == assetProvider.count) {
-      if (assetProvider.current == null) {
+      if (currentPath == null) {
         _onGalleryChange(this.galleryPathList[0]);
       } else {
+        assetProvider.current = currentPath;
         _loadMore();
       }
       return _buildLoading();
@@ -431,7 +433,8 @@ class _PhotoMainPageState extends State<PhotoMainPage>
     //   await checkPickImageEntity();
     //   setState(() {});
     // });
-    if (assetPathEntity != assetProvider.current) {
+    if (assetPathEntity != currentPath) {
+      currentPath = assetPathEntity;
       assetProvider.current = assetPathEntity;
       await assetProvider.loadMore();
       setState(() {});
